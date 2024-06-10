@@ -12,7 +12,7 @@ int main(void)
 #else
 	char v[20];
 
-	confstr(_CS_GNU_LIBC_VERSION, v);
+	confstr(_CS_GNU_LIBC_VERSION, v, sizeof(v));
 	printf("glibc version %s\n", v);
 #endif
 	return (0);

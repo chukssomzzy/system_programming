@@ -1,7 +1,7 @@
 # include <stdio.h>
 
 # ifdef __GLIBC__
-# include <gnu/libc_version.h>
+# include <gnu/libc-version.h>
 # endif
 
 /**
