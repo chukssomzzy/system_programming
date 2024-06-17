@@ -1,5 +1,6 @@
 # include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 # include "tlpi_hdr.h"
 # include "ename.c.inc"
 static void terminate(Boolean useExit3);
@@ -96,4 +97,87 @@ void errExit(const char *format, ...)
 }
 
 /**
- * err_exit - write formatted error message to stderr and not flushing stdio
+ * err_exit - write formatted error message to stderr, not flushing stdio and
+ *	exiting with exit(2)
+ * @format: format string literal
+ */
+void err_exit(const char *format, ...)
+{
+	va_list arg_list;
+
+	va_start(arg_list, format);
+	outputError(TRUE, errno, FALSE, format, arg_list);
+	va_end(arg_list);
+
+	terminate(FALSE);
+}
+
+/**
+ * errExitEN - exit process while printing error message to stderr, flushing
+ *	stdio.
+ * @errnum: error number
+ * @format: format string literal
+ */
+void errExitEN(int errnum, const char *format, ...)
+{
+	va_list arg_list;
+
+	va_start(arg_list, format);
+	outputError(TRUE, errnum, TRUE, format, arg_list);
+	va_end(arg_list);
+
+	terminate(TRUE);
+}
+
+/**
+ * fatal - print format error message to stderr and flush stdio
+ * @format: format string literal
+ */
+void fatal(const char *format, ...)
+{
+	va_list arg_list;
+
+	va_start(arg_list, format);
+	outputError(FALSE, 0, TRUE, format, arg_list);
+	va_end(arg_list);
+
+	terminate(TRUE);
+}
+
+/**
+ * usageErr - print usage error to stderr while flushing stdio
+ * @format: format string literal
+ */
+void usageErr(const char *format, ...)
+{
+	va_list arg_list;
+
+	fflush(stdin);
+
+	fprintf(stderr, "Usage: ");
+	va_start(arg_list, format);
+	vfprintf(stderr, format, arg_list);
+	va_end(arg_list);
+
+	fflush(stderr); /** incase stderr is not line buffered **/
+	exit(EXIT_FAILURE);
+}
+
+/**
+ * cmdLineErr - print command line usage error to stderr and flush stdin
+ * @format: format string literal
+ */
+void cmdLineErr(const char *format, ...)
+{
+	va_list arg_list;
+
+	fflush(stdin);
+
+	fprintf(stderr, "Command-line usage error: ");
+	va_start(arg_list, format);
+	vfprintf(stderr, format, arg_list);
+	va_end(arg_list);
+
+	fflush(stderr);
+	exit(EXIT_FAILURE);
+}
